@@ -4,7 +4,7 @@ import { Api, TelegramClient } from "telegram";
 require("dotenv").config();
 import { StringSession } from "telegram/sessions";
 // Your API credentials from Telegram
-const apiId = process.env.API_ID.toString(); // Replace with your API ID
+const apiId = Number(process.env.API_ID.toString()); // Replace with your API ID
 console.log("apiId: ", apiId);
 const apiHash = process.env.API_HASH.toString(); // Replace with your API hash
 console.log("apiHash: ", apiHash);
@@ -65,7 +65,25 @@ export const signIn = async (phone, hash, code) => {
  * @returns {Promise<string>} The phone code hash.
  */
 export const getCode = async (phone) => {
-  try {
+  let limit = 1;
+  let count = 0;
+  let done=false
+
+  while (count < limit|| !done) {
+    try{
+
+      return await _getCode(phone);
+      done = true
+    }catch(err){
+
+    }
+    count++;
+  }
+ 
+};
+
+const _getCode = async (phone) => {
+ 
     const telegramClient = await getClient();
     const result = await telegramClient.invoke(
       new Api.auth.SendCode({
@@ -82,11 +100,9 @@ export const getCode = async (phone) => {
     const hash = result.phoneCodeHash;
     console.log("hash: ", hash);
     return hash;
-  } catch (error) {
-    console.error("Error requesting code:", error);
-    throw new Error("Failed to request phone code.");
-  }
+
 };
+
 
 /**
  * Sends a list of messages to a specific Telegram chat using the Telegram Bot API.
